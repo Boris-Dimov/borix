@@ -1,0 +1,19 @@
+#!/bin/sh
+
+rescue_shell() {
+    echo "Something went wrong. Reverting to shell."
+    exec /bin/sh
+}
+
+mkdir /dev /proc /sys
+mount -t devtmpfs none /dev
+mount -t proc none /proc
+mount -t sysfs none /sys
+
+mkdir /mnt
+mkdir /mnt/root
+mount $(findfs LABEL="Borix") /mnt/root || rescue_shell
+
+umount /dev /proc /sys
+
+exec switch_root /mnt/root /sbin/init
