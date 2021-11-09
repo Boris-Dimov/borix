@@ -6,6 +6,11 @@ if [ ! -f "$imgfile" ]; then
     exit 1
 fi
 
+if [ ! $(find bios/extlinux -name "extlinux" | wc -l) ]; then
+    echo "File 'extlinux' not found. Aborting."
+    exit 4
+fi
+
 if [ ! -d "rootfs" ]; then
     echo "Directory 'rootfs' does not exist. Aborting."
     exit 2
@@ -29,7 +34,8 @@ fi
 
 sudo mount $imgfile temp
 
-sudo cp -au --copy-contents rootfs/. temp/
+sudo ./bios/extlinux/extlinux -i temp
+sudo cp -au rootfs/. temp/
 
 sudo umount temp
 sudo rm -r temp
